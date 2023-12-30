@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      canvas {
+        outline: 1px solid #f00;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="screen" width="317" height="174"></canvas>
+  </body>
+  <script>
+    const canvas = document.getElementById("screen");
+    const context = canvas.getContext("2d");
+
+    class Sprite {
+      constructor(image, w, h) {
+        this.image = image;
+        this.h = h;
+        this.w = w;
+        this.tiles = new Map();
+      }
+
+      define(name, x, y) {
+        const buffer = document.createElement("canvas");
+        buffer.width = this.w;
+        buffer.height = this.h;
+        buffer
+          .getContext("2d")
+          .drawImage(
+            this.image,
+            x * this.w,
+            y * this.h,
+            this.w,
+            this.h,
+            0,
+            0,
+            this.w,
+            this.h
+          );
+        this.tiles.set(name, buffer);
+      }
+
+      draw(name, context, x, y) {
+        const buffer = this.tiles.get(name);
+        context.drawImage(buffer, x, y);
+      }
+    }
+
+    function loadImage(url) {
+      return new Promise((resolve) => {
+        const image = new Image();
+        image.addEventListener("load", () => {
+          resolve(image);
+        });
+        image.src = url;
+      });
+    }
+
+    loadImage(
+      "./NinjaAdventure/Actor/Characters/GreenNinja/SpriteSheet.png"
+    ).then((greenNinjaPng) => {
+      const greenNinjaSprite = new Sprite(greenNinjaPng, 16, 16);
+      greenNinjaSprite.define("d1", 0, 0);
+      greenNinjaSprite.draw("d1", context, 0, 0);
+    });
+  </script>
+</html>
